@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "message": "Paid Rs.250 to Zomato",
+    "amount": -250
+  },
+  {
+    "id": 2,
+    "message": "Paid Rs.799 Uber Cashback Offer",
+    "amount": -799
+  },
+  {
+    "id": 3,
+    "message": "Received Rs.35000 Salary",
+    "amount": 35000
+  },
+  {
+    "id": 4,
+    "message": "Paid Rs.420 Swiggy",
+    "amount": -420
+  },
+  {
+    "id": 5,
+    "message": "Received Rs.1200 from Private Company Ltd",
+    "amount": 1200
+  }
+]
