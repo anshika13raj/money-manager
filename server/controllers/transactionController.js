@@ -2,13 +2,19 @@
  * Handles all transaction APIs.
  */
 
-import data from "../data/transactions.json" assert { type: "json" };
+import fs from "fs";
+
+const data = JSON.parse(
+  fs.readFileSync(
+    new URL("../data/transactions.json", import.meta.url),
+    "utf8"
+  )
+);
 
 import { parseCategory } from "../services/parser.js";
-
 import { calculateExpectedSavings } from "../services/rewardEngine.js";
-
 import { calculateAnalytics } from "../services/reducer.js";
+
 
 let transactions = data.map(transaction => {
 
