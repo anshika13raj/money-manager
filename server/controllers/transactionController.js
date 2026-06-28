@@ -3,7 +3,11 @@
  */
 
 import fs from "fs";
+import { parseCategory } from "../services/parser.js";
+import { calculateExpectedSavings } from "../services/rewardEngine.js";
+import { calculateAnalytics } from "../services/reducer.js";
 
+// Read transactions from JSON file
 const data = JSON.parse(
   fs.readFileSync(
     new URL("../data/transactions.json", import.meta.url),
@@ -11,80 +15,54 @@ const data = JSON.parse(
   )
 );
 
-import { parseCategory } from "../services/parser.js";
-import { calculateExpectedSavings } from "../services/rewardEngine.js";
-import { calculateAnalytics } from "../services/reducer.js";
+// Process transactions
+let transactions = data.map((transaction) => {
+  const category = parseCategory(transaction.message);
 
+  const reward = calculateExpectedSavings(
+    transaction.message,
+    transaction.amount
+  );
 
-let transactions = data.map(transaction => {
-
-    const category = parseCategory(transaction.message);
-
-    const reward = calculateExpectedSavings(
-
-        transaction.message,
-
-        transaction.amount
-
-    );
-
-    return {
-
-        ...transaction,
-
-        category,
-
-        ...reward
-
-    };
-
+  return {
+    ...transaction,
+    category,
+    ...reward,
+  };
 });
 
 /**
  * GET
  * Returns all transactions.
  */
-
 export const getTransactions = (req, res) => {
-
-    res.json(transactions);
-
+  res.json(transactions);
 };
 
 /**
- * Analytics
+ * GET
+ * Returns analytics.
  */
-
 export const getAnalytics = (req, res) => {
-
-    res.json(calculateAnalytics(transactions));
-
+  res.json(calculateAnalytics(transactions));
 };
 
 /**
  * POST
+ * Adds a new transaction.
  */
-
 export const addTransaction = (req, res) => {
+  const { message, amount } = req.body;
 
-    const { message, amount } = req.body;
+  const transaction = {
+    id: transactions.length + 1,
+    message,
+    amount,
+    category: parseCategory(message),
+    ...calculateExpectedSavings(message, amount),
+  };
 
-    const transaction = {
+  transactions.unshift(transaction);
 
-        id: transactions.length + 1,
-
-        message,
-
-        amount,
-
-        category: parseCategory(message),
-
-        ...calculateExpectedSavings(message, amount)
-
-    };
-
-    transactions.unshift(transaction);
-
-    res.status(201).json(transaction);
-
+  res.status(201).json(transaction);
 };
